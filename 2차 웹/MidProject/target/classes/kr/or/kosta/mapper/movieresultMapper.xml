@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+   
+ <mapper namespace="movie2">
+ 
+ 
+ 	<resultMap type="movietagvo" id="movietagvo">
+ 		<result column = "movie_number" property="movie_number"></result>
+		<result column = "tag_table_num" property="tag_table_num"></result>
+	</resultMap>
+	
+	<resultMap type="tagtablevo" id="tagtablevo">
+		<result column ="tag_category_num" property="tag_category_num"></result>
+		<result column ="tag_table_num" property="tag_table_num"></result>
+		<result column ="tag_name" property="tag_name"></result>
+		<collection property="movietagvo" resultMap="movietagvo"></collection>
+	</resultMap>
+
+	<resultMap type="movievo" id="movievo">
+		<result column="movie_number" property="movie_number"></result>
+		<result column="movie_price" property="movie_price"></result>
+		<result column="movie_title" property="movie_title"></result>
+		<result column="movie_open_date" property="movie_open_date"></result>
+		<result column="movie_purchase_date" property="movie_purchase_date"></result>
+		<result column="movie_rating" property="movie_rating"></result>
+		<result column="movie_view_count" property="movie_view_count"></result>
+		<result column="movie_watch_count" property="movie_watch_count"></result>
+		<result column="movie_number_of_audience" property="movie_number_of_audience"></result>
+		<result column="movie_investment" property="movie_investment"></result>
+		<result column="movie_copyright_cost" property="movie_copyright_cost"></result>
+		<collection property="movietagvo" resultMap="movietagvo">
+		</collection>
+	
+	</resultMap>
+	<!-- 영화페이지에서 join을 하면서 검색할 때 사용하는 resultmap -->
+	<select id="moviehashmap" resultMap="movietagvo" parameterType="hashmap">
+		select m.movie_number, m.movie_title, m.movie_price,m.movie_open_date, m.movie_purchase_date, m.movie_rating,m.movie_investment,
+		m.active_check_number,  t.tag_table_num,tt.tag_category_num, tt.tag_name
+		from movie m, movie_tag t, tag_table tt
+		
+			<where>
+				m.movie_number = t.movie_number
+				and t.tag_table_num = tt.tag_table_num
+				and tt.tag_category_num = 1	
+<!-- 				and m.movie_open_date  <![CDATA[ < ]]> ALL (select movie_open_date from movie where movie_open_date <![CDATA[ > ]]> sysdate) -->
+				<if test="search != null and search != ''">
+				<choose> 
+					<when test="searchType == 1">
+						and m.movie_title like '%' || #{search} || '%'
+					
+					</when>
+					<when test="searchType == 2">
+						and m.active_check_number like '%' || #{search} || '%'
+					</when>
+					<otherwise></otherwise>
+				</choose>
+						</if>
+				
+			</where>
+	
+		order by 1 asc
+	</select> 
+	
+	
+
+
+
+</mapper>
+  <!-- 뷰....만들어서......해당되는 vo를 만들고... -->

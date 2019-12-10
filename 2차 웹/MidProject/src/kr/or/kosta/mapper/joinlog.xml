@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+  
+
+  
+<mapper namespace="joinlog">
+<resultMap id="month_count" type="hashmap">
+	<result property="month" column="month"></result>
+	<result property="count" column="count"></result>
+</resultMap>
+<!--가입한 모든 회원의 수 카운트 -->
+  <select id="joinlogcount_all" resultType="int">
+select count (*) from member 
+  </select>
+<!-- 오늘 가입한 회원의 수 카운트 -->
+  <select id="joinlogcount_currentdate" resultType="int">
+  select count (*) from member where member_join_date like sysdate
+  </select>
+<!-- 최근 5일간 가입한 회원의 수 카운트(배열) -->
+  <select id="joinlogcount_days" resultType="int">
+  <![CDATA[
+select count(*) from member
+group by member_join_date
+having  member_join_date<=sysdate and  member_join_date>=(sysdate-5) order by  member_join_date asc
+]]>
+  </select>
+  <!-- 최근 5달간 가입한 회원의 수 카운트(배열) -->
+  <select id="joinlogcount_months" resultMap="month_count">
+    <![CDATA[
+  select extract(month from member_join_date ) as month,sum(count) as count from 
+(select  member_join_date ,count(*) as count from member
+group by  member_join_date
+having  member_join_date <=last_day(sysdate) and  member_join_date>=last_day( add_months(sysdate,-5) )
+order by  member_join_date asc)
+group by extract(month from  member_join_date)
+order by extract(month from  member_join_date) asc
+]]>
+  </select>
+  <!-- 최근 5년간 가입한 회원의 수 카운트(배열) -->
+  <select id="joinlogcount_years" resultType="int">
+  <![CDATA[
+select  count(*) from member
+group by extract(year from member_join_date)
+having 
+extract(year from member_join_date) <= extract(year from sysdate) and
+extract(year from member_join_date) >=  (extract(year from sysdate)-4)
+order by extract(year from member_join_date) asc
+]]>
+  </select>
+</mapper>

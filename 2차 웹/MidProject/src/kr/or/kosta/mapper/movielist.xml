@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="mymovielist">
+ 
+ 	<!-- 마이리스트 저장쿼리 -->
+ 	<insert	id="addMovieList" parameterType="hashmap">
+ 		insert into mylists values (mylists_seq.nextVal ,(select member_number from member where member_id = #{userId}),#{listName})
+ 	</insert>
+ 	   
+ 	<!-- 마이페이지 메인>나의 리스트 목록 하단에 출력하는 쿼리 리절트맵 -->   
+ 	<resultMap type="mlvo" id="myMovieListResult">
+		<id property="mylists_number" column="mylists_number" javaType="int"/> 	
+		<result property="mylists_name" column="mylists_name"/>
+		<collection property="ltList" javaType="java.util.List" ofType="list_tvo" >
+			<id property="listNo" column="listno" javaType="int"/>
+			<association property="movievo" column="movie_number" javaType="movievo">
+				<result property="movie_title" column="movie_title" />
+				<result property="movie_image" column="movie_image" />
+			</association>
+			<association property="lc_vo" column="list_category_number" javaType="list_catevo">
+				<result property="list_category_name" column="list_category_name" />
+			</association>
+			<association property="memvo" column="member_number" javaType="mvo">
+				<result property="member_name" column="member_name"/>
+			</association>
+		</collection>
+ 	</resultMap><!--  마이페이지 메인>나의 리스트 목록 하단에 출력하는 쿼리 -->
+	<select id="getMovieList" resultMap="myMovieListResult" parameterType="String">
+ 		select m.member_name member_name,mv.movie_title movie_title,ml.mylists_name mylists_name,
+ 				lcate.list_category_name list_category_name,mv.movie_image movie_image
+	    
+	    	from list_table a , member m, movie mv ,mylists ml,list_category lcate
+		where 
+		    m.member_id = #{userId}
+		    and ml.member_number = (select member_number from member where member_id = #{userId})
+		    and a.movie_number = mv.movie_number 
+		    and ml.mylists_number = a.mylists_number
+		    and lcate.list_category_number = a.list_category_number order by mylists_name 
+ 	</select>
+ 	
+ 	<!-- 플레이리스트 이름만 뽑아오는 쿼리 -->
+ 	<select id="getMvListName" parameterType="String" resultType="mlvo">
+ 		select mylists_name,mylists_number 
+    		from mylists 
+		where member_number = (select member_number from member where member_id = #{userId})
+		order by mylists_number desc
+	</select>
+ 	
+ 	
+ 	
+ 	<!-- 플레이리스트 검색목록 출력 쿼리. 리절트맵... -->
+ 	<resultMap type="movievo" id="searchMvListResult">
+ 		<result property="movie_image" column="movie_image"/>
+ 		<result property="movie_number" column="movie_number"/>
+ 		<result property="movie_title" column="movie_title"/>
+ 		<result property="movie_rating" column="movie_rating"/>
+ 		<result property="movie_watch_count" column="movie_watch_count"/>
+ 		<result property="movie_open_date" column="movie_open_date"/>
+ 		<association property="pricevo" javaType="pvo">
+ 			<result property="movie_real_price" column="movie_real_price"/>
+ 		</association>
+ 	</resultMap>
+ 	<select id="getSearchMvList" parameterType="String" resultMap="searchMvListResult">
+	 	select m.movie_image,m.movie_number,m.movie_title,m.movie_rating,m.movie_watch_count,m.movie_open_date ,m.movie_price,p.movie_real_price
+	    	from   (select movie_image,movie_number,movie_title,movie_rating,movie_watch_count,movie_open_date ,movie_price
+	                	from movie 
+	            	where movie_title like '%'||#{keyword}||'%') m, price p
+		where p.movie_price = m.movie_price
+	</select>
+	
+	
+	<!-- 마이페이지>재생목록>플레이리스트 페이지에서 재생목록추가>검색결과 리스트에 추가하는 쿼리 -->
+	<insert id="insertMvPlayList" parameterType="hashmap">
+		insert into list_table values(#{playListNum},#{listCategNum}, to_number(#{movieNum}))
+ 	</insert>
+ 	
+ 	
+ 	<!-- 마이페이지>재생목록>플레이리스트 삭제하는 쿼리 -->
+ 	<delete id="delPlayList" parameterType="hashmap">
+ 		delete mylists where mylists_number = #{listNum}
+ 	</delete>
+ 	
+ 	
+ 	<!-- 마이페이지>재생목록>플레이리스트 페이지에서 재생목록에 추가된 영상들 삭제하는 쿼리 -->
+ 	<delete id="delMvPlayList" parameterType="hashmap">
+ 		delete list_table where mylists_number = #{listNum} and movie_number= #{movie_number}
+ 	</delete>
+ 	
+ 	
+ 	<!-- 마이페이지>재생목록>플레이리스트 페이지에서 재생목록에 추가된 영상들 목록 출력하는 쿼리 리절트맵 -->
+ 	<resultMap type="list_tvo" id="getPlayListMvResult">
+		<result property="mylists_number" column="mylists_number"/>
+		<result property="movie_number" column="movie_number"/>
+		<association property="movievo" javaType="movievo">
+			<result property="movie_title" column="movie_title"/>
+			<result property="movie_image" column="movie_image"/>
+		</association>
+		<association property="mylistsvo" javaType="mlvo">
+			<result property="mylists_name" column="mylists_name"/>
+		</association>
+	</resultMap>
+ 	<select id="getPlayListMv" parameterType="String" resultMap="getPlayListMvResult">
+ 		select ml.mylists_name mylists_name,lt.mylists_number mylists_number,lt.movie_number movie_number,mv.movie_title movie_title,mv.movie_image movie_image 
+    		from movie mv, list_table lt, mylists ml
+		where lt.mylists_number = to_number(#{mylists_number}) and lt.movie_number = mv.movie_number and ml.mylists_number = lt.mylists_number
+ 	</select>
+ 	
+ </mapper>

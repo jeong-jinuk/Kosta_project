@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+  
+  
+  <mapper namespace="watchlog">
+  <resultMap id="month_count" type="hashmap">
+	<result property="month" column="month"></result>
+	<result property="count" column="count"></result>
+</resultMap>
+<!--   모든 영화 시청 수 카운트 -->
+  <select id="watchlogcount_all" resultType="int">
+select count (*) from watch_log
+  </select>
+<!--   오늘의 영화 시청 수 카운트 -->
+  <select id="watchlogcount_currentdate" resultType="int">
+  select count (*) from watch_log where watchlog_date like sysdate
+  </select>
+    <!-- 최근 5년간의  영화 시청 수 카운트(배열) -->
+  <select id="watchlogcount_days" resultType="int">
+      <![CDATA[
+  select count(*) from watch_log
+group by watchlog_date
+having watchlog_date<=sysdate and watchlog_date>=(sysdate-5) order by watchlog_date asc
+	]]>
+  </select>
+    <!-- 최근 5년간의  영화 시청 수 카운트(배열) -->
+    <select id="watchlogcount_months" resultMap="month_count">
+        <![CDATA[
+  select extract(month from watchlog_date ) as month,sum(count) as count from 
+(select  watchlog_date  ,count(*) as count from watch_log
+group by watchlog_date
+having watchlog_date  <=last_day(sysdate) and watchlog_date >=last_day( add_months(sysdate,-5) )
+order by  watchlog_date  asc)
+group by extract(month from  watchlog_date )
+order by extract(month from  watchlog_date ) asc
+	]]>
+  </select>
+  <!-- 최근 5년간의  영화 시청 수 카운트(배열) -->
+    <select id="watchlogcount_years" resultType="int">
+        <![CDATA[
+  select count(*) from watch_log
+group by extract(year from watchlog_date)
+having 
+extract(year from watchlog_date) <= extract(year from sysdate) and
+extract(year from watchlog_date) >=  (extract(year from sysdate)-4)
+order by extract(year from watchlog_date) asc
+	]]>
+  </select>
+  </mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="userInfo">
+ 
+ 	<!-- 필터링 설정할 때 기존의 설정을 지우고 저장하게 만들어서 삭제쿼리를 하나 사용 -->
+	<delete id="delUserFilter" parameterType="hashmap">
+		delete member_filter where member_number = (select member_number from member where member_id= #{userId})
+	</delete>
+	
+	<!-- 필터링 설정 저장 -->
+ 	<insert id="insertUserFilter" parameterType="hashmap">
+		insert into member_filter values(
+            (select member_number from member where member_id = #{userId}),	#{filterNum})
+ 	</insert>
+ 	
+ 	<!-- mypage > 필터링 설정 > 저장되어 있는 값이 있으면 체크할때 사용 -->
+ 	<select id="getFilterList" resultType="String" parameterType="String">
+ 		select tag_table_num 
+    		from member_filter 
+		where member_number=(select member_number from member where member_id = #{userId})
+			order by tag_table_num
+	</select>
+	
+		
+	<!--  			mypage > 나의 인생영화 목록 불러오는 부분  				-->
+	<resultMap type="movievo" id="myRankResult">
+		<id	property="movie_number" column="movie_number"/>
+		<result property="movie_title" column="movie_title"/>
+		<association property="rankvo" column="movie_number" javaType="mrvo">
+			<result property="rank_number" column="rank_number"/>
+		</association>	
+		<association property="gsbvo" column="rank_number" javaType="gsbvo">
+			<result property="rank_name" column="rank_name"/>
+		</association>
+	</resultMap>
+	<!-- 				나의 인생영화 목록  -->
+	<select id="getMyRankList" parameterType="String" resultMap="myRankResult">
+		select mrank.rank_number rank_number,gsb.rank_name rank_name,mv.movie_title movie_title
+    		from my_rank_table mrank, gsb_table gsb,movie mv , member m
+		where mrank.rank_number = gsb.rank_number and mrank.movie_number = mv.movie_number
+    		and m.member_id = #{userId}
+	</select>
+	
+	<!-- mv_sold_log_view  = 회원아이디, 구매한 영화제목, 구매한가격, 구매한날짜 를 뽑아오는 뷰 -->
+	<!-- 해당 쿼리는 마이페이지 > 평균 금액 차트 구할때 사용. function 을 사용해서 keyword 를 통해 월간,일간 데이터를 받아오기로 하였다. -->
+	<select id="getAvgSoldData" parameterType="hashmap" resultType="ucvo">
+		select * from table( uchartinfo_function(#{keyword}, #{m_id}) ) 
+	</select>
+	
+	<!--  마이페이지>내 재생목록> 영상 검색로그 저장하는 부분 -->
+	<insert id="insertSearchLog" parameterType="hashmap">
+		insert into search_log values(search_log_seq.nextVal,
+			(select member_number from member where member_id= #{userId})
+										,'C0000010',#{keyword},sysdate)
+	</insert>
+ 	
+ </mapper>

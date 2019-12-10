@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  
+  <mapper namespace="inserttag">
+  <!-- 댓글태그 탑10위 추가시 사용하는 매퍼 -->
+  
+  	<insert id="insert" parameterType="inserttagvo">
+  		
+  		insert into tag_table(
+  			tag_category_num,
+  			tag_table_num,
+  			tag_name,
+  			active_check_number
+  		) values(
+  		 4,
+  		 're'||tag_table_seq.nextVal,
+  		 #{tag_name},
+  		 1
+  		)
+  	</insert>
+  	
+  	<insert id="insertmovietag" parameterType="hashmap">
+  	insert into movie_Tag(
+  			movie_number,
+  			tag_table_num
+  			
+  		) values(
+  		 
+  		 #{movie_number},(select tag_table_num from 
+                            (select tag_table_num 
+                                from tag_table 
+					         where tag_name = #{tag_name}
+                                order by tag_table_num desc) 
+                            where rownum=1) )
+  		
+  		
+  		
+  		
+  		</insert>
+  	
+  	
+  	<select id="select" parameterType="hashmap" resultType="movievo">
+  	
+                select movie_number,rownum
+                from (select movie_number
+                from movie
+                order by MOVIE_NUMBER_OF_AUDIENCE desc)
+                where rownum <![CDATA[ <= ]]> 50
+                
+  	
+  			 </select>
+  			 
+  	
+  	<select id="checktagname" parameterType="String" resultType="int">
+  	
+                select count(*)
+                from tag_table
+                where tag_name=#{tag_name}
+  	
+  			 </select>
+  			 
+  	
+  			 
+  			 
+  
+  </mapper>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>index</title>
+    <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+ </head>
+ <body>
+
+
+
+
+
+<div class="container">
+      <h2>index Page</h2>
+        <p>hello~</p>
+
+          <ul class="nav nav-tabs">
+               <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+               <li><a data-toggle="tab" href="#menu1">신용등급 확인</a></li>
+               <li><a data-toggle="tab" href="#menu2">report</a></li>
+               <li><a data-toggle="tab" href="#menu3">회사소개</a></li>
+          </ul>
+
+            <div class="tab-content">
+                <div id="home" class="tab-pane fade in active">
+                   <h3>HOME</h3>
+                   <p>hello~</p>
+                </div>
+
+                <div id="menu1" class="tab-pane fade">
+                   <h3>신용등급 확인</h3>
+                   <p>hello</p>
+                <div class="col-md-6 col-md-offset-3">
+                     <h3>금융정보 입력폼</h3>
+                </div>
+                <div class="col-sm-6 col-md-offset-3">
+                    <li>{% for key,value in var_list.items() %}</li>
+                    <li class="list-group-item list-group-item-info"> {{key}} </li>
+                    <li class="list-group-item list-group-item-danger">
+                    {% if loop.index ==1 %}
+                    <label><input type="radio" id="{{value}}" name="sex_radio" class="var_sex", value=1>남자</label>
+                    <label><input type="radio" id="{{value}}" name="sex_radio" class="var_sex", value=2>여자</label></li>
+                    {% else %}
+                    <input type="text" id="{{value}}" name="{{value}}" class="var_list"></li>
+                    {% endif %}
+                    <li class="list-group-item list-group-item-danger">
+
+                        {% endfor %}</li>
+                <div class="form-group text-center">
+                    <button type="button" class ="btn btn-info" onclick="random_generate()">랜덤생성</button>
+                    <button type="button" class="btn btn-info"  onclick="send_form()">제출</button> 
+                </div></div>
+                <div>
+                    <p>사진</p>
+                </div>
+            </div>
+
+          <div id="menu2" class="tab-pane fade">
+                <h3>?</h3>
+                 <p>hello</p>
+             <button id="movereport" class="btn btn-info">report.html</button>
+          </div>
+
+           <div id="menu3" class="tab-pane fade">
+               <h3>회사소개</h3>
+               <p>회사소개</p>		
+           </div>			
+	   </div>
+
+</body>
+ <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+     <script>
+		$('#movereport').click(function(){
+				location.href="/report_view";
+				})
+         var success = 0;
+    function random_generate(){
+        $.ajax({
+            url : "random_generate",
+            method : "post",
+            type : "json",
+            contentType : "application/json",
+            success : function(data, status){
+				var radio_obj = document.getElementsByName('sex_radio');
+				for(i=0; i<radio_obj.length; i++){
+					if(radio_obj[i].value == data[0]){
+						radio_obj[i].checked = true;
+					}
+				}
+				var list = $('.var_list'); 
+				for(var i = 0; i<list.length; i++){
+					$(list[i]).val(data[i+1])
+				}
+            }
+        });
+    }
+    function send_form(){
+        var financial_info = {
+        sex : 0,
+        age :0,
+        avg_income:0,
+		avg_spend:0,
+        avg_debt:0,
+        avg_debt_credit:0,
+        vehicle_own_rat:0
+        
+        }
+		var obj = document.getElementsByName('sex_radio');
+		var checked_index = -1;
+		var checked_value = '';
+		for(i=0; i<obj.length; i++){
+			if(obj[i].checked){
+			    checked_value=obj[i].value;
+			}
+		}
+		financial_info.sex = checked_value;
+        financial_info.age = $('#age').val();
+        financial_info.avg_income= $('#avg_income').val();
+        financial_info.avg_spend= $('#avg_spend').val();
+        financial_info.avg_debt= $('#avg_debt').val();
+        financial_info.avg_debt_credit= $('#avg_debt_credit').val();
+        financial_info.vehicle_own_rat= $('#vehicle_own_rat').val();
+        $.ajax({
+            url:"send_form",
+            method : "post",
+            type : "json",
+            contentType : "application/json",
+            data : JSON.stringify(financial_info),
+            success : function(data){
+				if(data == "sparkerr"){
+					confirm("sparkerr")
+				}
+				else{
+					confirm("전송되었습니다.")
+					console.log(data)
+
+				}
+            }	
+		});
+	}
+     </script>
+
+
+     </html>

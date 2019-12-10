@@ -1,0 +1,903 @@
+/* 영화테이블 */
+CREATE TABLE Movie (
+	movie_number VARCHAR2(100) NOT NULL, /* 영화코드 */
+	movie_price number(3), /* 가격번호 */
+	movie_title VARCHAR2(255), /* 영화제목 */
+	movie_open_date DATE, /* 영화개봉날짜 */
+	movie_purchase_date DATE, /* 영화구매날짜 */
+	movie_rating NUMBER(10,2), /* 영화점수 */
+	movie_view_count NUMBER(10), /* 영화조회수 */
+	movie_watch_count NUMBER(10), /* 영화시청수 */
+	movie_number_of_audience number(30), /* 영화관객수 */
+	movie_investment NUMBER(20), /* 영화매출 */
+	movie_copyright_cost NUMBER(20), /* 영화판권구입액 */
+	active_check_number number(3), /* 활성화 체크 번호 */
+	movie_community_number number(3), /* 영화군집번호 */
+	movie_image varchar2(1000) /* 영화이미지 */
+);
+
+CREATE UNIQUE INDEX PK_Movie
+	ON Movie (
+		movie_number ASC
+	);
+
+ALTER TABLE Movie
+	ADD
+		CONSTRAINT PK_Movie
+		PRIMARY KEY (
+			movie_number
+		);
+
+/* 나의리스트제목 목록들 테이블 */
+CREATE TABLE MyLists (
+	mylists_number NUMBER(30) NOT NULL, /* 나의리스트제목번호 */
+	member_number NUMBER(30), /* 회원번호 */
+	mylists_name VARCHAR2(255) /* 리스트제목 */
+);
+
+CREATE UNIQUE INDEX PK_MyLists
+	ON MyLists (
+		mylists_number ASC
+	);
+
+ALTER TABLE MyLists
+	ADD
+		CONSTRAINT PK_MyLists
+		PRIMARY KEY (
+			mylists_number
+		);
+
+/* 공지사항테이블 */
+CREATE TABLE Notice (
+	notice_number NUMBER(30) NOT NULL, /* 공지사항 번호 */
+	notice_title VARCHAR2(255), /* 공지사항 제목 */
+	notice_content VARCHAR2(255), /* 공지사항 내용 */
+	notice_image VARCHAR2(255), /* 공지사항 이미지 */
+	notice_date DATE /* 공지사항 등록날짜 */
+);
+
+CREATE UNIQUE INDEX PK_Notice
+	ON Notice (
+		notice_number ASC
+	);
+
+ALTER TABLE Notice
+	ADD
+		CONSTRAINT PK_Notice
+		PRIMARY KEY (
+			notice_number
+		);
+
+/* 이벤트테이블 */
+CREATE TABLE Event (
+	event_number NUMBER(30) NOT NULL, /* 이벤트번호 */
+	notice_number NUMBER(30), /* 공지사항 번호 */
+	Tag_Table_num VARCHAR2(100), /* 태그코드 */
+	event_image VARCHAR2(200), /* 이벤트이미지 */
+	event_start_date DATE, /* 할인시작시간 */
+	event_end_date DATE /* 할인종료시간 */
+);
+
+CREATE UNIQUE INDEX PK_Event
+	ON Event (
+		event_number ASC
+	);
+
+ALTER TABLE Event
+	ADD
+		CONSTRAINT PK_Event
+		PRIMARY KEY (
+			event_number
+		);
+
+/* 회원테이블 */
+CREATE TABLE Member (
+	member_number NUMBER(30) NOT NULL, /* 회원번호 */
+	member_id VARCHAR2(255), /* 회원아이디 */
+	member_name VARCHAR2(255), /* 회원이름 */
+	member_password VARCHAR2(30), /* 회원비밀번호 */
+	member_join_date DATE, /* 회원가입일 */
+	member_birth DATE, /* 회원생일 */
+	member_picture VARCHAR2(255), /* 회원사진 */
+	member_grade NUMBER(5), /* 회원등급 */
+	active_check_number number(3), /* 활성화 체크 번호 */
+	member_community_number number(3) /* 회원군집번호 */
+);
+
+CREATE UNIQUE INDEX PK_Member
+	ON Member (
+		member_number ASC
+	);
+
+CREATE UNIQUE INDEX UIX_Member
+	ON Member (
+		member_id ASC
+	);
+
+ALTER TABLE Member
+	ADD
+		CONSTRAINT PK_Member
+		PRIMARY KEY (
+			member_number
+		);
+
+ALTER TABLE Member
+	ADD
+		CONSTRAINT UK_Member
+		UNIQUE (
+			member_id
+		);
+
+/* 리뷰-댓글테이블 */
+CREATE TABLE Review_UsedWords (
+	movie_number VARCHAR2(100), /* 영화코드 */
+	member_number NUMBER(30), /* 회원번호 */
+	usedwords_contents VARCHAR2(3000), /* 댓글작성내용 */
+	usedwords_times DATE /* 댓글작성시간 */
+);
+
+/* 시청로그 */
+CREATE TABLE Watch_Log (
+	watchlog_number NUMBER(30) NOT NULL, /* 시청로그번호 */
+	movie_number VARCHAR2(100) NOT NULL, /* 영화코드 */
+	member_number NUMBER(30), /* 회원번호 */
+	watchlog_date DATE /* 시청날짜 */
+);
+
+CREATE UNIQUE INDEX PK_Watch_Log
+	ON Watch_Log (
+		watchlog_number ASC
+	);
+
+ALTER TABLE Watch_Log
+	ADD
+		CONSTRAINT PK_Watch_Log
+		PRIMARY KEY (
+			watchlog_number
+		);
+
+/* 검색로그 */
+CREATE TABLE Search_Log (
+	searchlog_number NUMBER(30) NOT NULL, /* 검색로그번호 */
+	member_number NUMBER(30), /* 회원번호 */
+	Tag_Table_num VARCHAR2(100), /* 태그코드 */
+	searchlog_word VARCHAR2(255), /* 검색어내용 */
+	searchlog_date DATE /* 로그기록날짜 */
+);
+
+CREATE UNIQUE INDEX PK_Search_Log
+	ON Search_Log (
+		searchlog_number ASC
+	);
+
+ALTER TABLE Search_Log
+	ADD
+		CONSTRAINT PK_Search_Log
+		PRIMARY KEY (
+			searchlog_number
+		);
+
+/* 로그인로그 */
+CREATE TABLE Login_Log (
+	loginlog_number NUMBER(30) NOT NULL, /* 로그인 로그번호 */
+	member_number NUMBER(30), /* 회원번호 */
+	loginlog_login DATE, /* 로그인한 시간 */
+	loginlog_logout DATE /* 로그아웃한 시간 */
+);
+
+CREATE UNIQUE INDEX PK_Login_Log
+	ON Login_Log (
+		loginlog_number ASC
+	);
+
+ALTER TABLE Login_Log
+	ADD
+		CONSTRAINT PK_Login_Log
+		PRIMARY KEY (
+			loginlog_number
+		);
+
+/* 조회로그 */
+CREATE TABLE View_Log (
+	viewlog_number NUMBER(30) NOT NULL, /* 조회로그번호 */
+	movie_number VARCHAR2(100) NOT NULL, /* 영화코드 */
+	member_number NUMBER(30), /* 회원번호 */
+	viewlog_date DATE /* 조회날짜 */
+);
+
+CREATE UNIQUE INDEX PK_View_Log
+	ON View_Log (
+		viewlog_number ASC
+	);
+
+ALTER TABLE View_Log
+	ADD
+		CONSTRAINT PK_View_Log
+		PRIMARY KEY (
+			viewlog_number
+		);
+
+/* 태그카테고리테이블 */
+CREATE TABLE Tag_Category (
+	Tag_Category_num number(10) NOT NULL, /* 태그카테고리번호 */
+	Tag_Category_Name VARCHAR2(30) /* 태그카테고리이름 */
+);
+
+CREATE UNIQUE INDEX PK_Tag_Category
+	ON Tag_Category (
+		Tag_Category_num ASC
+	);
+
+ALTER TABLE Tag_Category
+	ADD
+		CONSTRAINT PK_Tag_Category
+		PRIMARY KEY (
+			Tag_Category_num
+		);
+
+/* 태그테이블 */
+CREATE TABLE Tag_Table (
+	Tag_Category_num number(10) NOT NULL, /* 태그카테고리번호 */
+	Tag_Table_num VARCHAR2(100) NOT NULL, /* 태그코드 */
+	Tag_Name varchar2(100), /* 태그이름 */
+	active_check_number number(3) /* 활성화 체크 번호 */
+);
+
+CREATE UNIQUE INDEX PK_Tag_Table
+	ON Tag_Table (
+		Tag_Table_num ASC
+	);
+
+ALTER TABLE Tag_Table
+	ADD
+		CONSTRAINT PK_Tag_Table
+		PRIMARY KEY (
+			Tag_Table_num
+		);
+
+/* 판매된영화로그 */
+CREATE TABLE Movie_Sold_Log (
+	soldlog_number NUMBER(30) NOT NULL, /* 판매로그번호 */
+	member_number NUMBER(30), /* 회원번호 */
+	movie_number VARCHAR2(100), /* 영화코드 */
+	movie_price number(3), /* 가격번호 */
+	movie_sold_date DATE /* 영화판매날짜 */
+);
+
+CREATE UNIQUE INDEX PK_Movie_Sold_Log
+	ON Movie_Sold_Log (
+		soldlog_number ASC
+	);
+
+ALTER TABLE Movie_Sold_Log
+	ADD
+		CONSTRAINT PK_Movie_Sold_Log
+		PRIMARY KEY (
+			soldlog_number
+		);
+
+/* 리스트 카테고리 테이블 */
+CREATE TABLE List_Category (
+	list_category_number number(10) NOT NULL, /* 리스트카테고리번호 */
+	list_category_name VARCHAR2(20) /* 리스트이름 */
+);
+
+CREATE UNIQUE INDEX PK_List_Category
+	ON List_Category (
+		list_category_number ASC
+	);
+
+ALTER TABLE List_Category
+	ADD
+		CONSTRAINT PK_List_Category
+		PRIMARY KEY (
+			list_category_number
+		);
+
+/* 리스트 테이블 */
+CREATE TABLE List_Table (
+	mylists_number NUMBER(30), /* 나의리스트제목번호 */
+	list_category_number number(10), /* 리스트카테고리번호 */
+	movie_number VARCHAR2(100) /* 영화코드 */
+);
+
+/* 캘린더 테이블 */
+CREATE TABLE aniversary_table (
+	anniversary_number NUMBER(30) NOT NULL, /* 기념일 번호 */
+	notice_number NUMBER(30), /* 공지사항 번호 */
+	anniversary_title VARCHAR2(50), /* 기념일 제목 */
+	anniversary_content VARCHAR2(50), /* 기념일 내용 */
+	anniversary_start_date DATE, /* 기념일 시작 날짜 */
+	anniversary_end_date DATE /* 기념일 종료 날짜 */
+);
+
+CREATE UNIQUE INDEX PK_aniversary_table
+	ON aniversary_table (
+		anniversary_number ASC
+	);
+
+ALTER TABLE aniversary_table
+	ADD
+		CONSTRAINT PK_aniversary_table
+		PRIMARY KEY (
+			anniversary_number
+		);
+
+/* 별점 테이블 */
+CREATE TABLE Movie_Rating (
+	movie_number VARCHAR2(100), /* 영화코드 */
+	member_number NUMBER(30), /* 회원번호 */
+	movie_user_rating number(10) /* 별점 */
+);
+
+/* 회원등급 테이블 */
+CREATE TABLE member_grade (
+	member_grade NUMBER(5) NOT NULL, /* 회원등급 */
+	member_dept VARCHAR2(20) /* 회원직책 */
+);
+
+CREATE UNIQUE INDEX PK_member_grade
+	ON member_grade (
+		member_grade ASC
+	);
+
+ALTER TABLE member_grade
+	ADD
+		CONSTRAINT PK_member_grade
+		PRIMARY KEY (
+			member_grade
+		);
+
+/* 회원 필터 */
+CREATE TABLE Member_Filter (
+	member_number NUMBER(30), /* 회원번호 */
+	Tag_Table_num VARCHAR2(100) /* 태그코드 */
+);
+
+/* 민원테이블 */
+CREATE TABLE Minwon (
+	counsel_category_number NUMBER(30), /* 상담카테고리번호 */
+	member_number NUMBER(30), /* 회원번호 */
+	minwon_admin_member NUMBER(30) /* 상담직원 */
+);
+
+/* 상담카테고리 */
+CREATE TABLE counsel_category (
+	counsel_category_number NUMBER(15) NOT NULL, /* 상담카테고리번호 */
+	counsel_category_name VARCHAR2(30) /* 상담카테고리이름 */
+);
+
+CREATE UNIQUE INDEX PK_counsel_category
+	ON counsel_category (
+		counsel_category_number ASC
+	);
+
+ALTER TABLE counsel_category
+	ADD
+		CONSTRAINT PK_counsel_category
+		PRIMARY KEY (
+			counsel_category_number
+		);
+
+/* 영화태그테이블 */
+CREATE TABLE movie_tag (
+	movie_number VARCHAR2(100), /* 영화코드 */
+	Tag_Table_num  VARCHAR2(100) /* 태그코드 */
+);
+
+/* 나의 랭크 테이블 */
+CREATE TABLE My_Rank_Table (
+	member_number NUMBER(30), /* 회원번호 */
+	movie_number VARCHAR2(100), /* 영화코드 */
+	rank_number NUMBER(15) /* 금은동번호 */
+);
+
+/* 영화수정로그 */
+CREATE TABLE Movie_Modify_Log (
+	viewlog_number NUMBER(30) NOT NULL, /* 영화수정로그번호 */
+	movie_number VARCHAR2(100) NOT NULL, /* 영화코드 */
+	modify_before_price number(3), /* 수정 전 가격번호 */
+	modifylog_date DATE /* 수정날짜 */
+);
+
+CREATE UNIQUE INDEX PK_Movie_Modify_Log
+	ON Movie_Modify_Log (
+		viewlog_number ASC
+	);
+
+ALTER TABLE Movie_Modify_Log
+	ADD
+		CONSTRAINT PK_Movie_Modify_Log
+		PRIMARY KEY (
+			viewlog_number
+		);
+
+/* 가격 테이블 */
+CREATE TABLE price (
+	movie_price number(3) NOT NULL, /* 가격번호 */
+	movie_real_price number(20) /* 실제가격 */
+);
+
+CREATE UNIQUE INDEX PK_price
+	ON price (
+		movie_price ASC
+	);
+
+ALTER TABLE price
+	ADD
+		CONSTRAINT PK_price
+		PRIMARY KEY (
+			movie_price
+		);
+
+/* 활성화체크 */
+CREATE TABLE Active_Check (
+	active_check_number number(3) NOT NULL, /* 활성화 체크 번호 */
+	active_check_content VARCHAR2(100) /* 활성화 번호 내용 */
+);
+
+CREATE UNIQUE INDEX PK_Active_Check
+	ON Active_Check (
+		active_check_number ASC
+	);
+
+ALTER TABLE Active_Check
+	ADD
+		CONSTRAINT PK_Active_Check
+		PRIMARY KEY (
+			active_check_number
+		);
+
+/* 금은동 테이블 */
+CREATE TABLE GSB_Table (
+	rank_number NUMBER(15) NOT NULL, /* 금은동 번호 */
+	rank_name VARCHAR2(30) /* 금은동 내용 */
+);
+
+CREATE UNIQUE INDEX PK_GSB_Table
+	ON GSB_Table (
+		rank_number ASC
+	);
+
+ALTER TABLE GSB_Table
+	ADD
+		CONSTRAINT PK_GSB_Table
+		PRIMARY KEY (
+			rank_number
+		);
+
+/* 영화군집테이블 */
+CREATE TABLE Movie_community (
+	movie_community_number number(3) NOT NULL, /* 영화군집번호 */
+	movie_community_content VARCHAR2(100) /* 영화군집내용 */
+);
+
+CREATE UNIQUE INDEX PK_Movie_community
+	ON Movie_community (
+		movie_community_number ASC
+	);
+
+ALTER TABLE Movie_community
+	ADD
+		CONSTRAINT PK_Movie_community
+		PRIMARY KEY (
+			movie_community_number
+		);
+
+/* 회원군집테이블 */
+CREATE TABLE Member_Community (
+	member_community_number number(3) NOT NULL, /* 회원군집번호 */
+	member_community_content VARCHAR2(100) /* 회원군집내용 */
+);
+
+CREATE UNIQUE INDEX PK_Member_Community
+	ON Member_Community (
+		member_community_number ASC
+	);
+
+ALTER TABLE Member_Community
+	ADD
+		CONSTRAINT PK_Member_Community
+		PRIMARY KEY (
+			member_community_number
+		);
+
+ALTER TABLE Movie
+	ADD
+		CONSTRAINT FK_price_TO_Movie
+		FOREIGN KEY (
+			movie_price
+		)
+		REFERENCES price (
+			movie_price
+		);
+
+ALTER TABLE Movie
+	ADD
+		CONSTRAINT FK_Active_Check_TO_Movie
+		FOREIGN KEY (
+			active_check_number
+		)
+		REFERENCES Active_Check (
+			active_check_number
+		);
+
+ALTER TABLE Movie
+	ADD
+		CONSTRAINT FK_Movie_community_TO_Movie
+		FOREIGN KEY (
+			movie_community_number
+		)
+		REFERENCES Movie_community (
+			movie_community_number
+		);
+
+ALTER TABLE MyLists
+	ADD
+		CONSTRAINT FK_Member_TO_MyLists
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Event
+	ADD
+		CONSTRAINT FK_Tag_Table_TO_Event
+		FOREIGN KEY (
+			Tag_Table_num
+		)
+		REFERENCES Tag_Table (
+			Tag_Table_num
+		);
+
+ALTER TABLE Event
+	ADD
+		CONSTRAINT FK_Notice_TO_Event
+		FOREIGN KEY (
+			notice_number
+		)
+		REFERENCES Notice (
+			notice_number
+		);
+
+ALTER TABLE Member
+	ADD
+		CONSTRAINT FK_member_grade_TO_Member
+		FOREIGN KEY (
+			member_grade
+		)
+		REFERENCES member_grade (
+			member_grade
+		);
+
+ALTER TABLE Member
+	ADD
+		CONSTRAINT FK_Active_Check_TO_Member
+		FOREIGN KEY (
+			active_check_number
+		)
+		REFERENCES Active_Check (
+			active_check_number
+		);
+
+ALTER TABLE Member
+	ADD
+		CONSTRAINT FK_Member_Community_TO_Member
+		FOREIGN KEY (
+			member_community_number
+		)
+		REFERENCES Member_Community (
+			member_community_number
+		);
+
+ALTER TABLE Review_UsedWords
+	ADD
+		CONSTRAINT FK_Movie_TO_Review_UsedWords
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE Review_UsedWords
+	ADD
+		CONSTRAINT FK_Member_TO_Review_UsedWords
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Watch_Log
+	ADD
+		CONSTRAINT FK_Member_TO_Watch_Log
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Watch_Log
+	ADD
+		CONSTRAINT FK_Movie_TO_Watch_Log
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE Search_Log
+	ADD
+		CONSTRAINT FK_Member_TO_Search_Log
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Search_Log
+	ADD
+		CONSTRAINT FK_Tag_Table_TO_Search_Log
+		FOREIGN KEY (
+			Tag_Table_num
+		)
+		REFERENCES Tag_Table (
+			Tag_Table_num
+		);
+
+ALTER TABLE Login_Log
+	ADD
+		CONSTRAINT FK_Member_TO_Login_Log
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE View_Log
+	ADD
+		CONSTRAINT FK_Member_TO_View_Log
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE View_Log
+	ADD
+		CONSTRAINT FK_Movie_TO_View_Log
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE Tag_Table
+	ADD
+		CONSTRAINT FK_Tag_Category_TO_Tag_Table
+		FOREIGN KEY (
+			Tag_Category_num
+		)
+		REFERENCES Tag_Category (
+			Tag_Category_num
+		);
+
+ALTER TABLE Tag_Table
+	ADD
+		CONSTRAINT FK_Active_Check_TO_Tag_Table
+		FOREIGN KEY (
+			active_check_number
+		)
+		REFERENCES Active_Check (
+			active_check_number
+		);
+
+ALTER TABLE Movie_Sold_Log
+	ADD
+		CONSTRAINT FK_Member_TO_Movie_Sold_Log
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Movie_Sold_Log
+	ADD
+		CONSTRAINT FK_Movie_TO_Movie_Sold_Log
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE Movie_Sold_Log
+	ADD
+		CONSTRAINT FK_price_TO_Movie_Sold_Log
+		FOREIGN KEY (
+			movie_price
+		)
+		REFERENCES price (
+			movie_price
+		);
+
+ALTER TABLE List_Table
+	ADD
+		CONSTRAINT FK_List_Category_TO_List_Table
+		FOREIGN KEY (
+			list_category_number
+		)
+		REFERENCES List_Category (
+			list_category_number
+		);
+
+ALTER TABLE List_Table
+	ADD
+		CONSTRAINT FK_Movie_TO_List_Table
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE List_Table
+	ADD
+		CONSTRAINT FK_MyLists_TO_List_Table
+		FOREIGN KEY (
+			mylists_number
+		)
+		REFERENCES MyLists (
+			mylists_number
+		);
+
+ALTER TABLE aniversary_table
+	ADD
+		CONSTRAINT FK_Notice_TO_aniversary_table
+		FOREIGN KEY (
+			notice_number
+		)
+		REFERENCES Notice (
+			notice_number
+		);
+
+ALTER TABLE Movie_Rating
+	ADD
+		CONSTRAINT FK_Movie_TO_Movie_Rating
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE Movie_Rating
+	ADD
+		CONSTRAINT FK_Member_TO_Movie_Rating
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Member_Filter
+	ADD
+		CONSTRAINT FK_Member_TO_Member_Filter
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Member_Filter
+	ADD
+		CONSTRAINT FK_Tag_Table_TO_Member_Filter
+		FOREIGN KEY (
+			Tag_Table_num
+		)
+		REFERENCES Tag_Table (
+			Tag_Table_num
+		);
+
+ALTER TABLE Minwon
+	ADD
+		CONSTRAINT FK_counsel_category_TO_Minwon
+		FOREIGN KEY (
+			counsel_category_number
+		)
+		REFERENCES counsel_category (
+			counsel_category_number
+		);
+
+ALTER TABLE Minwon
+	ADD
+		CONSTRAINT FK_Member_TO_Minwon
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE Minwon
+	ADD
+		CONSTRAINT FK_Member_TO_Minwon2
+		FOREIGN KEY (
+			minwon_admin_member
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE movie_tag
+	ADD
+		CONSTRAINT FK_Tag_Table_TO_movie_tag
+		FOREIGN KEY (
+			Tag_Table_num 
+		)
+		REFERENCES Tag_Table (
+			Tag_Table_num
+		);
+
+ALTER TABLE movie_tag
+	ADD
+		CONSTRAINT FK_Movie_TO_movie_tag
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE My_Rank_Table
+	ADD
+		CONSTRAINT FK_Member_TO_My_Rank_Table
+		FOREIGN KEY (
+			member_number
+		)
+		REFERENCES Member (
+			member_number
+		);
+
+ALTER TABLE My_Rank_Table
+	ADD
+		CONSTRAINT FK_Movie_TO_My_Rank_Table
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);
+
+ALTER TABLE My_Rank_Table
+	ADD
+		CONSTRAINT FK_GSB_Table_TO_My_Rank_Table
+		FOREIGN KEY (
+			rank_number
+		)
+		REFERENCES GSB_Table (
+			rank_number
+		);
+
+ALTER TABLE Movie_Modify_Log
+	ADD
+		CONSTRAINT FK_Movie_TO_Movie_Modify_Log
+		FOREIGN KEY (
+			movie_number
+		)
+		REFERENCES Movie (
+			movie_number
+		);

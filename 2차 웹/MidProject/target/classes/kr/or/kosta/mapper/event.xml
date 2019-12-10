@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="event">
+  	<select id="exist" resultType="int">
+  		select count(*) cnt from event
+  		where event_end_date <![CDATA[ >= ]]> sysdate and event_start_date <![CDATA[ <= ]]>sysdate
+  	</select>
+  	<select id="show" resultType="String">
+  			select event_image from event
+  			where event_end_date<![CDATA[ >=]]> sysdate and event_start_date<![CDATA[ <= ]]>sysdate
+  	</select>
+  	  <select id="event_in_target_select" parameterType="hashmap" resultMap="event_in_target_mvo">
+	select tc.tag_category_name tag_category_name, tt.tag_name tag_name, tt.tag_table_num tag_table_num,  m.movie_title movie_title
+	from  Tag_category tc, Tag_Table tt, Movie_tag mt, Movie m
+	
+	<if test="event_type !=null and event_type != ''">
+  		<where>
+  			<choose>
+  				<when test="event_type ==0">
+  				m.movie_title like '%' || #{event_name} || '%' and tt.tag_category_num=1
+		  		</when>
+		  		<when test="event_type ==1">
+  				or tt.tag_name like '%' || #{event_name} || '%' and tt.tag_category_num=1
+		  		</when>
+		  		<when test="event_type ==2">
+  				or tt.tag_name like '%' || #{event_name} || '%' and tt.tag_category_num=2
+		  		</when>
+		  		<when test="event_type ==3">
+  				or tt.tag_name like '%' || #{event_name} || '%' and tt.tag_category_num=3
+		  		</when>
+		  		<when test="event_type ==4">
+  				or tt.tag_name like '%' || #{event_name} || '%' and tt.tag_category_num=4
+		  		</when>
+		  		
+  			</choose>
+  		</where>
+  	</if>  
+  	and tc.tag_category_num=tt.tag_category_num
+	and tt.tag_table_num=mt.tag_table_num
+	and mt.movie_number=m.movie_number	
+  </select>
+
+  
+  <resultMap type="ymvo" id="event_in_target_mvo">
+      <id property="movie_Number" column="movie_Number" javaType="String" />
+      <result property="movie_number" column="movie_Number" />
+      <result property="movie_title" column="movie_title" />
+      <result property="movie_open_date" column="movie_Open_Date" />
+      <result property="movie_purchase_date" column="movie_Purchase_Date" />
+      <result property="movie_price" column="movie_Price" />
+      <result property="movie_rating" column="movie_Rating" />
+      <result property="movie_view_count" column="movie_View_Count" />
+      <result property="movie_watch_count" column="movie_Watch_Count" />
+      <result property="movie_number_of_audience" column="movie_Number_Of_Audience" />
+      <result property="movie_investment" column="movie_Investment" />
+      <result property="movie_copyright_cost" column="movie_CopyRight_Cost" />
+      <collection property="movie_tag" javaType="java.util.List"
+         resultMap="event_in_target_mtvo" ofType="ymtvo">
+      </collection>
+   </resultMap>
+   
+    <resultMap type="ymtvo" id="event_in_target_mtvo">
+      <id property="movie_Number" column="movie_Number" javaType="String" />
+      <result property="movie_Number" column="movie_Number" />
+      <result property="tag_Table_Num" column="tag_Table_Num" />
+      <collection property="tag_table" javaType="java.util.List"
+         resultMap="event_in_target_ttvo" ofType="yttvo">
+      </collection>
+   </resultMap>
+   
+   <resultMap type="yttvo" id="event_in_target_ttvo">
+      <id property="tag_Table_Num" column="tag_Table_Num" javaType="String" />
+      <result property="tag_Table_Num" column="tag_Table_Num" />
+      <result property="tag_Name" column="tag_Name" />
+      <collection property="tag_category" javaType="java.util.List"
+         resultMap="event_in_target_tcvo" ofType="ytcvo">
+      </collection>
+   </resultMap>
+   
+   <resultMap type="ytcvo" id="event_in_target_tcvo">
+      <id property="tag_Category_Num" column="tag_Category_Num" javaType="int" />
+      <result property="tag_Category_Num" column="tag_Category_Num" />
+      <result property="tag_Category_Name" column="tag_Category_Name" />
+   </resultMap>
+
+	<insert id="insert" parameterType="evo">
+		insert into event
+  		values(event_seq.nextVal,#{notice_number},#{tag_Table_Num},#{event_Image},#{event_Start_Date},#{event_End_Date})
+	</insert>
+  </mapper>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+    <mapper namespace="movie">
+    
+    
+    <!-- 영화 검색시 초기값 출력을  위한 것 -->
+<select id="movielist" parameterType="hashmap"
+  	resultType="movievo">
+  		select * from movie
+  	
+  			 </select>
+  			 
+  			 
+  			 <select id="movietitlelist" parameterType="hashmap"
+  			 resultType="movievo">
+  			 select movie_title from movie
+  			 where movie_title like '%' || #{movie_title} || '%'
+  			 
+  			 </select>
+  			 
+  			 
+  			 
+  			 <!-- 차트를 위한 가격리스트 -->
+  			 <select id="price" resultType="int" parameterType="list">
+  	select count(*)
+         from movie
+         group by movie_price
+         order by movie_price asc
+ 
+</select>
+
+
+
+
+
+
+
+
+
+<!-- 영화 페이지에서 영화 테이블 active_number 수정을 위한 update -->
+ <update id="updatestatus" parameterType="movievo">
+ update movie set active_check_number = #{active_check_number}
+ where movie_number= #{movie_number}
+ 
+ </update>
+ 
+ 
+ 
+ <!-- 영화 페이지에서 영화 추가를 위한 insert -->
+ <insert id="beforeinsert" parameterType="movietagvo">
+ insert into movie_tag(
+ 	movie_number,
+ 	tag_table_num
+ 	
+ ) values(
+ 	#{movie_number},
+ 	#{tag_table_num}
+ )
+ 
+ 
+ 
+ 
+ </insert>
+ 
+ <insert id="insert" parameterType="movievo">
+ insert into movie(
+    movie_number,
+    movie_price,
+    movie_title,
+    movie_purchase_date,
+    movie_open_date,
+    movie_copyright_cost
+ 
+ 
+ ) values(
+ 	#{movie_number},
+ 	#{movie_price},
+ 	#{movie_title},
+ 	sysdate,
+ 	sysdate,
+ 	#{movie_copyright_cost}
+ 	
+    
+ 
+ )
+ 
+ 
+ </insert>
+ 
+ 
+ 
+ <!-- 영화 페이지에서 가격 수정을 위한 update -->
+ <update id="update" parameterType="movievo">
+ update movie set movie_price = #{movie_price}
+ where movie_number=#{movie_number}
+ 
+ </update>
+ 
+  			 
+  			
+ </mapper>
+ 

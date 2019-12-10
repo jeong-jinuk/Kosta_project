@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+	<typeAlias type="kr.or.kosta.dto.MovieVO" alias="movievo"></typeAlias>
+	<typeAlias type="kr.or.kosta.dto.MovietagVO" alias="movietagvo"></typeAlias>
+	<typeAlias type="kr.or.kosta.dto.TagtableVO" alias="tagtablevo"></typeAlias>
+	<typeAlias type="kr.or.kosta.dto.PricecountVO" alias="pricecountvo"></typeAlias>
+	<typeAlias  type="kr.or.kosta.dto.MovieSoldLogVO" alias="mslv" />
+	<typeAlias type="kr.or.kosta.dto.TagVO" alias="tvo"/>
+	<typeAlias type="kr.or.kosta.dto.UserTagWeightedList" alias="utwl"/>
+	<typeAlias type="kr.or.kosta.dto.NoticeVO" alias="nvo"/>
+	<typeAlias type="kr.or.kosta.dto.MyMemberVO" alias="mvo"/>
+	<typeAlias type="kr.or.kosta.dto.Tag_CategoryVO" alias="tcvo"/>
+	<typeAlias type="kr.or.kosta.dto.EventVO" alias="evo"/>
+	<typeAlias type="kr.or.kosta.dto.SearchVO" alias="sevo"/>
+	<typeAlias type="kr.or.kosta.dto.Login_LogVO" alias="llvo"/>
+	<typeAlias type="kr.or.kosta.dto.WatchLogVO" alias="wlvo"/>
+	
+
+<typeAlias alias="membervo" type="kr.or.kosta.dto.MemberVO"/>
+<typeAlias alias="inserttagvo" type="kr.or.kosta.dto.InserttagVO"/>	
+	
+	 	<typeAlias type="kr.or.kosta.dto.My_RankVO" alias="mrvo"/>
+	 	<typeAlias type="kr.or.kosta.dto.MyListsVO" alias="mlvo"/>
+	 	<typeAlias type="kr.or.kosta.dto.List_CategoryVO" alias="list_catevo"/>
+	 	<typeAlias type="kr.or.kosta.dto.List_tableVO" alias="list_tvo"/>
+	 	<typeAlias type="kr.or.kosta.dto.PriceVO" alias="pvo"/>
+	 	<typeAlias type="kr.or.kosta.dto.GsbVO" alias="gsbvo"/>
+		<typeAlias type="kr.or.kosta.dto.userChartViewVO" alias="ucvo"/>
+		
+		<typeAlias type="kr.or.kosta.dto.GM_MovieVO" alias="GM_mov"/>
+		<typeAlias type="kr.or.kosta.dto.GM_Movie_tagVO" alias="GM_mtvo"/>
+		<typeAlias type="kr.or.kosta.dto.GM_ReviewVO" alias="GM_rvo"/>
+		<typeAlias type="kr.or.kosta.dto.GM_Movie_RatingVO" alias="GM_mrvo"/>
+		<typeAlias type="kr.or.kosta.dto.GM_RankVO" alias="GM_rankvo"/>
+		<typeAlias type="kr.or.kosta.dto.GM_CountVO" alias="GM_cvo"/>
+		<typeAlias type="kr.or.kosta.dto.GM_View_LogVO" alias="GM_vlvo"/>
+		<typeAlias type="kr.or.kosta.dto.GM_Watch_LogVO" alias="GM_wlvo"/>
+		<typeAlias type="kr.or.kosta.dto.GM_AgeVO" alias="GM_avo"/>
+		
+		
+		<!-- 환석 부분 -->
+		<typeAlias type="kr.or.kosta.dto.Search_LogVO"
+			alias="search_logvo" />
+		<typeAlias type="kr.or.kosta.dto.View_LogVO"
+			alias="view_logvo" />
+		<typeAlias type="kr.or.kosta.dto.Movie_Sold_LogVO"
+			alias="movie_sold_logvo" />
+		<typeAlias type="kr.or.kosta.dto.Watch_LogVO"
+			alias="watch_logvo" />
+			
+		<typeAlias type="kr.or.kosta.dto.YS_Movie_tagVO" alias="ymtvo"/>
+		<typeAlias type="kr.or.kosta.dto.YS_MovieVO" alias="ymvo"/>
+		<typeAlias type="kr.or.kosta.dto.YS_Tag_CategoryVO" alias="ytcvo"/>
+		<typeAlias type="kr.or.kosta.dto.YS_Tag_TableVO" alias="yttvo"/>
+	</typeAliases>
+	
+</configuration>

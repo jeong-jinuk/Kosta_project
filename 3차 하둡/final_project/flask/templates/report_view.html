@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>index</title>
+    <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+ </head>
+ <body>
+<div class="container">
+  <h2>report_view 페이지</h2>  
+    <!-- <div class="col-md-6 col-md-offset-5"> -->
+    <button id="renew" class="btn btn-info" onclick="get_report()">새로고침</button > </div>
+<div id="report_contents">
+</div>
+
+
+
+
+</body>
+ <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+	function get_report(){
+	    $.ajax({
+		url : "get_report",
+		method : "post",
+		success:function(data, status){
+			console.log("get_report")
+			$('#report_contents').html(data);
+		}
+		});
+	}
+
+</script>
+     </html>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+  
+  <mapper namespace ="GM_movie">
+  	<insert id="add" parameterType="GM_mov">
+	  	insert into movie values(#{movie_number},#{movie_price},#{movie_title},TO_DATE(#{movie_open_date}, 'YYYYMMDD'),TO_DATE(#{movie_purchase_date}, 'YYYYMMDD'),#{movie_rating},#{movie_view_count},#{movie_watch_count},#{movie_number_of_audience},#{movie_investment},#{movie_copyright_cost},1)
+  	</insert>
+  	
+  	
+  	<select id="getMovieVO" resultType="GM_mov" parameterType="String">
+  		select * from movie where movie_title=#{movie_title}
+  	</select>
+  	
+  	<select id="getMovie_number" resultType="String" parameterType="String">
+  		select movie_number from movie where movie_title=#{movie_title}
+  	</select>
+  	
+  	<select id="getMovie_title" resultType="String" parameterType="String">
+  		select movie_title from movie where movie_number=#{movie_number}
+  	</select>
+  	
+  	<select id="getMyRating" resultType="String" parameterType="java.util.Map">
+  		select MOVIE_USER_RATING from movie_rating where movie_number=(select movie_number from movie where movie_title=#{movie_title}) and member_number=(select member_number from member where member_id=#{member_id})
+  	</select>
+  	
+  	
+  	<insert id="addMovie_rating" parameterType="GM_mrvo">
+	  	insert into movie_rating values((select movie_number from movie where movie_title=#{movie_title}),(select member_number from member where member_id=#{member_id}),#{movie_rating})
+  	</insert>
+  	
+  	<update id="updateMovie_rating" parameterType="GM_mrvo">
+	  	update movie_rating set movie_rating = #{movie_rating} where movie_number=(select movie_number from movie where movie_title=#{movie_title}) and member_number=(select member_number from member where member_id=#{member_id})
+  	</update>
+  	
+  	<select id="chk_Movie_rating" resultType="int" parameterType="GM_mrvo">
+  		select count(*) cnt from movie_rating where movie_number = #{movie_number} and member_number = #{member_number}
+  	</select>
+  	
+  	<select id="get_movie_comment" resultType="java.util.HashMap" parameterType="String">
+  		select c.usedwords_number, c.usedwords_contents, to_char(c.usedwords_times, 'yyyy-mm-dd HH24:mm:ss') "USEDWORDS_TIMES", m.member_id, m.member_name  
+  		from (select * from Review_UsedWords where movie_number = #{movie_number} order by 3 desc) c, member m 
+  		where c.member_number = m.member_number and rownum <![CDATA[ <= ]]> 5
+  	</select>
+  	
+  	<update id="update_count" parameterType="GM_cvo">
+  		update movie set movie_number_of_audience=#{movie_number_of_audience} 
+  		where movie_number=#{movie_number}
+  	</update>
+  	
+  	
+  	<insert id="add_rating" parameterType="GM_mrvo">
+	  	insert into movie_rating values(#{movie_number},#{member_number},#{movie_rating})
+  	</insert>
+  	
+  	<select id="chk_Movie_review" resultType="int" parameterType="GM_rvo">
+  		select count(*) cnt from Review_UsedWords 
+  		where movie_number = #{movie_number} and member_number = #{member_number}
+  	</select>
+  	
+  	<insert id="add_review" parameterType="GM_rvo">
+	  	insert into Review_UsedWords values(#{movie_number},#{member_number}, #{usedwords_contents}, sysdate)
+  	</insert>
+  	
+  	<select id="getMember_number" resultType="int" parameterType="String">
+  		select member_number from member where member_id=#{member_id}
+  	</select>
+  	
+  	<select id="chk_rank_list" resultType="int" parameterType="GM_rankvo">
+  		select count(*) cnt from My_Rank_Table 
+  		where movie_number = #{movie_number} and member_number = #{member_number}
+  	</select>
+  	
+  	<insert id="add_rank" parameterType="GM_rankvo">
+	  	insert into My_Rank_Table values(#{member_number}, #{movie_number},#{rank_number})
+  	</insert>
+  	
+  	<update id="update_rank" parameterType="GM_rankvo">
+  		update My_Rank_Table set rank_number=#{rank_number} 
+  		where movie_number=#{movie_number} and member_number = #{member_number}
+  	</update>
+  	
+  	<insert id="add_view_log" parameterType="GM_vlvo">
+	  	insert into View_Log values(view_log_seq.nextVal, #{movie_number}, #{member_number}, sysdate)
+  	</insert>
+  	
+  	<update id="update_movie_view" parameterType="GM_vlvo">
+  		update movie set movie_view_count = movie_view_count_seq.nextVal where movie_number=#{movie_number}
+  	</update>
+  	
+  	
+  	
+  	<insert id="add_watch_log" parameterType="GM_wlvo">
+	  	insert into Watch_Log values(watch_log_seq.nextVal, #{movie_number}, #{member_number}, sysdate)
+  	</insert>
+  	
+  	<update id="update_movie_watch" parameterType="GM_wlvo">
+  		update movie set movie_watch_count = movie_watch_count_seq.nextVal where movie_number=#{movie_number}
+  	</update>
+  	
+  	<insert id="add_sold_log" parameterType="GM_wlvo">
+	  	insert into Movie_Sold_Log 
+	  	values(movie_sold_log_seq.nextVal,#{member_number}, #{movie_number},#{movie_price}, sysdate)
+  	</insert>
+  	
+  	<select id="chk_event" resultType="int" parameterType="String">
+  		select count(*) cnt from Event where tag_table_num 
+  		in (select tag_table_num from movie_tag where movie_number=#{movie_number}) 
+  		and event_start_date <![CDATA[ <= ]]> sysdate and sysdate <![CDATA[ <= ]]> event_end_date
+  		
+  	</select>
+  	
+  	<select id="get_login_log_age" resultType="GM_avo">
+  		select count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),1,1)) as "age_10s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),2,1)) as "age_20s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),3,1)) as "age_30s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),4,1)) as "age_40s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),5,1)) as "age_50s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),6,1)) as "age_60s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),7,1)) as "age_70s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),8,1)) as "age_80s",
+        count(decode(floor(to_char(ADD_MONTHS( to_date(sysdate, 'YY-MM-DD'), -(to_char(member_birth,'yy')*12)),'yy')/10),9,1)) as "age_90s"
+		from (select l.member_number, l.loginlog_login, m.member_birth from login_log l, member m where l.member_number=m.member_number)
+  	</select>
+  	
+  	<select id="get_m_title_boxOffice5" resultType="String">
+  		select movie_title from (select * from movie 
+		where to_char(movie_open_date, 'yy') = to_char(sysdate, 'yy') 
+		or to_char(movie_open_date, 'yy') = to_char(sysdate, 'yy')-1 
+		ORDER by 4 desc) where rownum <![CDATA[ <= ]]> 5
+  		
+  	</select>
+  	
+  	<select id="get_m_title_popular5" resultType="String">
+  		select movie_title from (select * from movie order by 9 desc) where rownum <![CDATA[ <= ]]> 5
+  	</select>
+  	
+  	<select id="get_m_title_lastviewed5" resultType="String" parameterType="int">
+  		select movie_title from movie 
+		where movie_number 
+		in (select movie_number 
+		from (select * from view_log 
+		where member_number = #{member_number} order by 1 desc) 
+		where rownum <![CDATA[ <= ]]> 5)
+  	</select>
+  	
+  	<select id="get_m_title_pay5" resultType="String">
+  		select movie_title from (select * from movie where movie_price = 5 order by 9 desc) where rownum <![CDATA[ <= ]]> 5
+  	</select>
+  	
+  	<select id="get_m_title_free5" resultType="String">
+  		select movie_title from (select * from movie where movie_price = 1 order by 9 desc) where rownum <![CDATA[ <= ]]> 5
+  	</select>
+  	
+  	
+  </mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="loginlog">
+<resultMap id="month_count" type="hashmap">
+	<result property="month" column="month"></result>
+	<result property="count" column="count"></result>
+</resultMap>
+<!-- 모든 로그인 기록 수 카운트 -->
+	<select id="loginlogcount_all" resultType="int">
+		select count (*) from login_log
+	</select>
+<!-- 오늘의 로그인로그 개수 카운트 -->
+	<select id="loginlogcount_currentdate" resultType="int">
+		select count
+		(*) from login_log where loginlog_login like sysdate
+	</select>
+	<!-- 최근 5일간의 로그인 회원의 수 카운트(배열) -->
+	<select id="loginlogcount_days" resultType="int">
+	<![CDATA[
+select count(*) from login_log
+group by loginlog_login 
+having loginlog_login<=sysdate and loginlog_login>=(sysdate-5) order by loginlog_login asc
+]]>
+	</select>
+		<!-- 최근 5달간의 로그인 회원의 수 카운트(배열) -->
+		<select id="loginlogcount_months" resultMap="month_count">
+		
+			<![CDATA[
+select extract(month from loginlog_login ) as month,sum(count) as count from 
+(select loginlog_login ,count(*) as count from login_log
+group by loginlog_login
+having loginlog_login <=last_day(sysdate) and loginlog_login>=last_day( add_months(sysdate,-5) )
+order by loginlog_login asc)
+group by extract(month from loginlog_login)
+order by extract(month from loginlog_login) asc
+]]>
+
+	</select>
+		<!-- 최근 5년간의 로그인 회원의 수 카운트(배열) -->
+	<select id="loginlogcount_years" resultType="int">
+				<![CDATA[
+select  count(*) from login_log
+group by extract(year from loginlog_login)
+having 
+extract(year from loginlog_login) <= extract(year from sysdate) and
+extract(year from loginlog_login) >=  (extract(year from sysdate)-4)
+order by extract(year from loginlog_login) asc
+]]>
+	</select>
+  	<insert id="login" parameterType="llvo">
+  		insert into login_log values(
+  		login_out_logging_sq.nextVal,#{member_number},sysdate,sysdate)
+  	</insert>
+  	<update id="logout" parameterType="llvo">
+  		update login_log
+			set loginlog_logout = sysdate
+			where loginlog_number = #{loginlog_number}
+  	</update>
+  	<select id="che" parameterType="llvo" resultType="int">
+  		select loginlog_number, rownum from (select * from login_log order by loginlog_number desc)
+  		where rownum in (1) and member_number = #{member_number}
+  	</select>
+</mapper>

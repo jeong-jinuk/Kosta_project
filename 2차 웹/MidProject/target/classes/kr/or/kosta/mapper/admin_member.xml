@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin_member">
+
+	<!-- 회원 정보 리스트 출력 -->
+	<resultMap type="membervo" id="memberResultMap">
+		<id property="member_number" column="member_number" />
+	</resultMap>
+	<select id="showMember" parameterType="hashmap"
+		resultMap="memberResultMap">
+		select member_number, member_id, member_name
+		from member
+		<if test="searchName != null and searchName != ''">
+			<where>
+				<choose>
+					<when test="searchType == 1">
+						member_id like '%' || #{searchName} || '%'
+					</when>
+					<when test="searchType == 2">
+						and member_name like '%' || #{searchName} || '%'
+					</when>
+					<otherwise></otherwise>
+				</choose>
+			</where>
+		</if>
+		order by 1
+	</select>
+
+	<!-- 회원 상세 정보 출력 -->
+	<resultMap type="membervo" id="memberResultMap2">
+		<id property="member_number" column="member_number" javaType="int" />
+		<result property="member_id" column="member_id" />
+		<result property="member_name" column="member_name" />
+		<result property="member_password" column="member_password" />
+		<result property="member_join_date" column="member_join_date"
+			javaType="String" jdbcType="DATE" />
+		<result property="member_birth" column="member_birth"
+			javaType="String" jdbcType="DATE" />
+		<result property="member_picture" column="member_picture" />
+		<result property="member_grade" column="member_grade" />
+		<result property="active_check_number"
+			column="active_check_number" />
+		<collection property="login_log" javaType="java.util.List"
+			ofType="llvo">
+			<id property="loginlog_number" column="loginlog_number"
+				javaType="int" />
+			<result property="member_number" column="member_number" />
+			<result property="loginlog_logout" column="recent_login" />
+			<result property="loginlog_login" column="total_login_count" />
+		</collection>
+		<collection property="watch_log" javaType="java.util.List"
+			ofType="watch_logvo">
+			<id property="watchlog_number" column="watchlog_number"
+				javaType="int" />
+			<result property="member_number" column="member_number" />
+			<result property="watchlog_date" column="total_watch_count" />
+		</collection>
+		<collection property="movie_sold_log"
+			javaType="java.util.List" ofType="movie_sold_logvo">
+			<id property="soldlog_number" column="soldlog_number"
+				javaType="int" />
+			<result property="member_number" column="member_number" />
+			<result property="movie_price" column="movie_price" />
+			<association property="price" column="movie_price"
+				javaType="pvo">
+				<id property="movie_price" column="movie_price" />
+				<result property="movie_real_price" column="total_payment" />
+			</association>
+		</collection>
+	</resultMap>
+	<select id="showMemberDetail" resultMap="memberResultMap2"
+		parameterType="int">
+		select distinct m.member_number, m.member_id,
+		m.member_name,
+		m.member_password,
+		to_char(m.member_join_date,	'yyyy-MM-dd') member_join_date,
+		to_char(m.member_birth,'yyyy-MM-dd') member_birth,
+		m.member_picture, m.member_grade, m.active_check_number,
+		max(ll.loginlog_logout) recent_login, count(ll.loginlog_login)
+		total_login_count,
+		count(wl.watchlog_date) total_watch_count,
+		mslv.total_payment
+		from member m,
+		(select msl.member_number,
+		sum(p.movie_real_price) total_payment
+		from price p, movie_sold_log msl
+		where p.movie_price = msl.movie_price
+		group by msl.member_number) mslv,
+		login_log ll, watch_log wl
+		
+		where m.member_number=mslv.member_number
+		and	m.member_number=ll.member_number
+		and m.member_number=wl.member_number
+		and m.member_number=#{member_number}
+		
+		group by m.member_number, m.member_id, m.member_name, m.member_password,
+		to_char(m.member_join_date, 'yyyy-MM-dd'),
+		to_char(m.member_birth,'yyyy-MM-dd'), m.member_picture,
+		m.member_grade, m.active_check_number, mslv.total_payment,
+		wl.watchlog_date
+		
+		order by 1
+	</select>
+
+	<!-- 회원 정보 수정 -->
+	<resultMap type="membervo" id="memberResultMap3">
+		<id property="member_number" column="member_number" />
+	</resultMap>
+	<update id="updateMember" parameterType="membervo">
+		update member
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="member_picture != '' ">
+				member_picture = #{member_picture},
+			</if>
+			<if test="member_name != '' ">
+				member_name = #{member_name},
+			</if>
+			<if test="member_password != '' ">
+				member_password = #{member_password},
+			</if>
+			<if test="member_birth != '' ">
+				member_birth = #{member_birth},
+			</if>
+			<if test="member_grade != '' ">
+				member_grade = #{member_grade},
+			</if>
+			<if test="active_check_number != '' ">
+				active_check_number = #{active_check_number}
+			</if>
+		</trim>
+		where member_number = #{member_number}
+	</update>
+
+</mapper>
+
+
+
+
+
+
+

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- 각 로그 테이블 정보 출력  -->
+<mapper namespace="loginfo">
+<!-- 	검색 로그 정보 -->
+	<resultMap type="search_logvo" id="search_logResultMap">
+		<id property="searchlog_number" column="searchlog_number" />
+	</resultMap>
+	<select id="showSearch_Log" resultMap="search_logResultMap">
+		select searchlog_number,
+		member_number, tag_table_num, searchlog_word, searchlog_date
+		from
+		search_log
+		order by 1
+	</select>
+
+<!-- 	조회 로그 정보 -->
+	<resultMap type="view_logvo" id="view_logResultMap">
+		<id property="viewlog_number" column="viewlog_number" />
+	</resultMap>
+	<select id="showView_Log" resultMap="view_logResultMap">
+		select viewlog_number,
+		movie_number, member_number, viewlog_date
+		from
+		view_log
+		order by 1
+	</select>
+	
+<!-- 	시청 로그 정보 -->
+	<resultMap type="watch_logvo" id="watch_logResultMap">
+		<id property="watchlog_number" column="watchlog_number" />
+	</resultMap>
+	<select id="showWatch_Log" resultMap="watch_logResultMap">
+		select watchlog_number,
+		movie_number, member_number, watchlog_date
+		from
+		watch_log
+		order by 1
+	</select>
+
+<!-- 	영화 판매 로그 정보 -->
+	<resultMap type="movie_sold_logvo"
+		id="movie_sold_logResultMap">
+		<id property="soldlog_number" column="soldlog_number" />
+	</resultMap>
+	<select id="showMovie_Sold_Log"
+		resultMap="movie_sold_logResultMap">
+		select soldlog_number,
+		member_number, movie_number,
+		movie_price, movie_sold_date
+		from
+		movie_sold_log
+		order by 1
+	</select>
+
+<!-- 	로그인 로그 정보 -->
+	<resultMap type="llvo" id="login_logvoResultMap">
+		<id property="loginlog_number" column="loginlog_number" />
+	</resultMap>
+	<select id="showLogin_Log" resultMap="login_logvoResultMap">
+		select loginlog_number,
+		member_number, loginlog_login, loginlog_logout
+		from
+		login_log
+		order by 1
+	</select>
+</mapper>
+
+
+
+
+
+
+

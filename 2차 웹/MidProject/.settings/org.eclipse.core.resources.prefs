@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+encoding//WebContent/WEB-INF/jsp/blank.jsp=UTF-8
+encoding//src/kr/or/kosta/dto/MovietagVO.java=UTF-8
+encoding//src/kr/or/kosta/mvc/controller/DefaultController.java=UTF-8

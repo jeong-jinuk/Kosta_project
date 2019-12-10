@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+    <context:component-scan
+        base-package="kr.or.kosta.mvc">
+
+
+    </context:component-scan>
+
+    <mvc:annotation-driven />
+
+
+    <mvc:resources location="/resources/" mapping="/resources/**">
+        
+        
+        </mvc:resources>
+        <mvc:resources location="/js/" mapping="/js/**"/>
+
+    <mvc:resources location="/css/" mapping="/css/**"/>
+
+    <mvc:resources location="/img/" mapping="/img/**"/>
+    
+    <mvc:resources location="/lib/" mapping="/lib/**"></mvc:resources>
+    
+    <mvc:resources location="/contactform/" mapping="/contactform/**"></mvc:resources>
+    
+    <mvc:resources location="/webjars/" mapping="/webjars/**" />
+
+
+    <bean id="dataSource"
+        class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:comp/env/jdbc/mykosta" />
+    </bean>
+    <!-- mybatis설정 -->
+    <bean id="factoryBean"
+        class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation"
+            value="classpath:kr/or/kosta/config/config.xml" />
+        <property name="mapperLocations"
+            value="classpath:*kr/or/kosta/mapper/*.xml" />
+    </bean>
+    <bean id="ss" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="factoryBean" />
+    </bean>
+
+    <!-- prefix =/WEB-INF/jsp/viewname -->
+    <!-- 기본 인덱스 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+    
+    <bean id="viewResolver"
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+    
+    <!-- interceptor 설정 -->
+    <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/member/*" />
+			<mvc:mapping path="/movie/*" />
+            <mvc:mapping path="/complaint/*" />
+            
+			<!-- interceptor를 제외할 경우 -->
+			<mvc:exclude-mapping path="/index-admin" />
+			<bean class="kr.or.kosta.mvc.interceptor.MyHandlerInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+        
+</beans>
+<!-- <?xml version="1.0" encoding="UTF-8"?> -->
+<!-- <beans xmlns="http://www.springframework.org/schema/beans" -->
+<!-- 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" -->
+<!-- 	xmlns:aop="http://www.springframework.org/schema/aop" -->
+<!-- 	xmlns:context="http://www.springframework.org/schema/context" -->
+<!-- 	xmlns:mvc="http://www.springframework.org/schema/mvc" -->
+<!-- 	xmlns:tx="http://www.springframework.org/schema/tx" -->
+<!-- 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd -->
+<!-- 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd -->
+<!-- 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd -->
+<!-- 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd -->
+<!-- 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"> -->
+
+	
+<!-- 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy> -->
+<!-- 	<context:component-scan -->
+<!-- 		base-package="kr.or.kosta.mvc"> -->
+
+		
+
+<!-- 	</context:component-scan> -->
+
+<!-- 	<mvc:annotation-driven > -->
+
+
+<!-- 		<mvc:message-converters> -->
+
+
+<!-- 			<bean class="org.springframework.http.converter.StringHttpMessageConverter"> -->
+<!-- 				<property name="supportedMediaTypes"> -->
+<!-- 					<list> -->
+					
+<!-- 						<value>text/html; charset=UTF-8</value> -->
+<!-- 					</list> -->
+				
+<!-- 				</property> -->
+			
+<!-- 			</bean> -->
+			
+<!-- 			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"> -->
+<!-- 				<property name="supportedMediaTypes"> -->
+<!-- 					<list> -->
+					
+<!-- 						<value>application/json; charset=UTF-8</value> -->
+<!-- 					</list> -->
+				
+<!-- 				</property> -->
+			
+<!-- 			</bean> -->
+			
+<!-- 		</mvc:message-converters> -->
+<!-- 	</mvc:annotation-driven> -->
+
+
+<!-- 	<mvc:resources location="/resources/" mapping="/resources/**"> -->
+		
+		
+<!-- 		</mvc:resources> -->
+<!-- 		<mvc:resources location="/js/" mapping="/js/**"/> -->
+
+<!-- 	<mvc:resources location="/css/" mapping="/css/**"/> -->
+
+<!-- 	<mvc:resources location="/img/" mapping="/img/**"/> -->
+	
+<!-- 	<mvc:resources location="/lib/" mapping="/lib/**"></mvc:resources> -->
+	
+<!-- 	<mvc:resources location="/contactform/" mapping="/contactform/**"></mvc:resources> -->
+	
+<!-- 	<mvc:resources location="/webjars/" mapping="/webjars/**" /> -->
+
+
+
+
+
+<!-- 	<bean id="dataSource" -->
+<!-- 		class="org.springframework.jndi.JndiObjectFactoryBean"> -->
+<!-- 		<property name="jndiName" value="java:comp/env/jdbc/mykosta" /> -->
+<!-- 	</bean> -->
+<!-- 	<bean id="factoryBean" -->
+<!-- 		class="org.mybatis.spring.SqlSessionFactoryBean"> -->
+<!-- 		<property name="dataSource" ref="dataSource" /> -->
+<!-- 		<property name="configLocation" -->
+<!-- 			value="classpath:kr/or/kosta/config/config.xml" /> -->
+<!-- 		<property name="mapperLocations" -->
+<!-- 			value="classpath:*kr/or/kosta/mapper/*.xml" /> -->
+<!-- 	</bean> -->
+<!-- 	<bean id="ss" class="org.mybatis.spring.SqlSessionTemplate"> -->
+<!-- 		<constructor-arg ref="factoryBean" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="viewResolver" -->
+<!-- 		class="org.springframework.web.servlet.view.InternalResourceViewResolver"> -->
+<!-- 		<property name="prefix" value="/WEB-INF/jsp/"></property> -->
+<!-- 		<property name="suffix" value=".jsp"></property> -->
+<!-- 	</bean> -->
+<!-- 	<bean id="tm" -->
+<!-- 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
+<!-- 		<property name="dataSource" ref="dataSource" /> -->
+<!-- 	</bean> -->
+<!-- 	<tx:annotation-driven transaction-manager="tm" /> -->
+		
+<!-- </beans> -->

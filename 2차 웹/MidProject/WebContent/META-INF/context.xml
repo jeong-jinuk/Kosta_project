@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- JNDI(Java Naming Directory Interface -->
+<Context>
+	<Resource name="jdbc/mykosta" auth="Container"
+		type="javax.sql.DataSource"
+		driverClassName="oracle.jdbc.driver.OracleDriver"
+		url="jdbc:oracle:thin:@Localhost:1521:xe" username="midproject"
+		password="midproject" maxActive="20" maxIdle="10" maxWait="-1" />
+</Context>
