@@ -1,0 +1,33 @@
+INSERT INTO MEMBER_GRADE VALUES(9,'최고관리자');
+INSERT INTO MEMBER_GRADE VALUES(7,'민원담당자');
+INSERT INTO MEMBER_GRADE VALUES(6,'영화담당자');
+INSERT INTO MEMBER_GRADE VALUES(5,'회원담당자');
+INSERT INTO MEMBER_GRADE VALUES(1,'일반유저');
+
+insert into counsel_category values(1, '건의');
+insert into counsel_category values(2, '신고');
+insert into counsel_category values(3, '문의');
+
+insert into tag_category values(1, '장르');
+insert into tag_category values(2, '배우');
+insert into tag_category values(3, '감독');
+insert into tag_category values(4, '댓글');
+
+insert into price values(1,0);
+insert into price values(2,1000);
+insert into price values(3,2500);
+insert into price values(4,5000);
+insert into price values(5,10000);
+
+insert into active_check values(0, '비활성화');
+insert into active_check values(1, '활성화');
+
+Insert Into list_category VALUES(1,'찜리스트');
+Insert Into list_category VALUES(2,'나의리스트');
+
+
+INSERT INTO gsb_table values(1,'GOLD');
+insert into gsb_table values(2,'SILVER');
+insert into gsb_table values(3,'BRONZE');
+
+commit;
